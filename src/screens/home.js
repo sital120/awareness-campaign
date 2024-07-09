@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
 import image1 from '../images/img1.jpg';
 import image2 from '../images/img2.jpg'; 
 import image3 from '../images/img3.jpg'; 
@@ -17,12 +15,16 @@ const Home = () => {
 	const [newCampaignList, setNewCampaignList] = useState([])
 	useEffect(() => {
         const fetchData = async () => {
-            // const session = localStorage.getItem('session');
             if (session) {
                 try {
                     const parsedSession = JSON.parse(session);
                     const campaigns = await fetchUserCampaign(parsedSession);
-                    setNewCampaignList(campaigns.campaign);
+
+					if (Array.isArray(campaigns?.campaign)) {
+						setNewCampaignList(campaigns.campaign);
+					} else {
+						alert("Invalid campaign data format:");
+					}
                 } catch (error) {
                     console.error("Failed to fetch campaigns:", error);
                 }
@@ -183,22 +185,20 @@ const Home = () => {
 								</ul>}
 							</section>
 						</div>
-						{newCampaignList.map((campaign,index)=>{
-							return(
+						{newCampaignList?.map((campaign, index) => (
 							<div className="col-4 col-12-medium" key={index}>
 								<section className="highlight">
 									<div className="image featured"><img src={image5} alt="" /></div>
-									<h3><a href="#"> {campaign?.title} </a></h3>
-									<p>{campaign.description}</p>
-									{!session && <ul className="actions">
-										<li><a href="/signup" className="button style1">Signup</a></li>
-									</ul>}
+									<h3><a href="#">{campaign?.title}</a></h3>
+									<p>{campaign?.description}</p>
+									{!session && (
+										<ul className="actions">
+											<li><a href="/signup" className="button style1">Signup</a></li>
+										</ul>
+									)}
 								</section>
 							</div>
-							)
-						})
-						}
-						
+						))}
 					</div>
 				</div>
 			</section>
